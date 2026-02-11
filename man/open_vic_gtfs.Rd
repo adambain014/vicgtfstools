@@ -16,14 +16,22 @@ values are:
 `"Regional_Coach"`, `"Regional_Bus"`, `"Interstate"`, `"SkyBus"`.}
 }
 \value{
-A GTFS object as returned by \code{gtfstools::read_gtfs()}, containing
-the parsed contents of the selected GTFS feed.
+A GTFS object as returned by \code{gtfstools::read_gtfs()}, with an
+additional \code{$mode} list element containing:
+\itemize{
+  \item \code{$number}: the PTV mode number (e.g., 2 for Metro Train)
+  \item \code{$name}: the mode name as specified in the \code{mode} argument
+}
 }
 \description{
 Selects and loads a specific Victorian GTFS feed based on the chosen
 public transport mode. This function assumes that the GTFS archive has
 already been downloaded and extracted into the standard PTV folder
 structure, where each mode is stored in a numbered subdirectory.
+
+The returned GTFS object includes a \code{$mode} list with elements
+\code{$number} (the PTV mode number) and \code{$name} (the mode name),
+which can be used for subsequent filtering or joining operations.
 }
 \details{
 The function maps human‑readable mode names to the numeric folder
@@ -35,6 +43,9 @@ to read the feed.
 \dontrun{
 # Load the Metro Train GTFS feed
 metro <- open_vic_gtfs("gtfs", "Metro_Train")
+
+# Check mode metadata
+metro$mode  # list(number = 2, name = "Metro_Train")
 }
 
 }

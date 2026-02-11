@@ -1,20 +1,26 @@
 Package: vicgtfstools
 Type: Package
-Title: Open and process Victorian GTFS data
+Title: Open and Process Victorian GTFS Data
 Version: 0.1.0
 Authors@R: c(
     person(
       "Adam", "Bain",
-      email = "adambain014@gmail.com.au",
+      email = "adambain014@gmail.com",
       role = c("aut", "cre")
     )
   )
-Description: Package to help open victorian GTFS data
-License: MIT
+Description: Tools for downloading, opening, and processing General Transit Feed 
+    Specification (GTFS) data from Public Transport Victoria (PTV). Provides 
+    functions to download the latest Victorian GTFS schedule, open individual 
+    transport mode feeds, and combine multiple feeds with mode metadata.
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Imports:
     utils,
+    rlang,
     gtfstools,
     dplyr
+Suggests:
+    sf
 RoxygenNote: 7.3.3

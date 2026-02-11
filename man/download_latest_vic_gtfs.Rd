@@ -2,17 +2,73 @@
 % Please edit documentation in R/download_latest_vic_gtfs.R
 \name{download_latest_vic_gtfs}
 \alias{download_latest_vic_gtfs}
-\title{Download the latest Victorian GTFS schedule}
+\title{Download the Latest Victorian GTFS Schedule}
 \usage{
 download_latest_vic_gtfs(to = "gtfs")
 }
 \arguments{
-\item{to}{Directory where the GTFS files should be saved.}
+\item{to}{A character string specifying the directory where GTFS files should be
+saved and extracted. Defaults to `"gtfs"`. The directory will be
+created if it does not exist.}
 }
 \value{
-The path to the folder where the GTFS files were extracted.
+Invisibly returns the path to the directory containing the extracted
+GTFS feeds (same as the \code{to} argument). The extracted structure
+contains numbered subdirectories (e.g., `1/`, `2/`, `3/`) where each
+subdirectory represents a transport mode and contains a
+`google_transit.zip` file.
 }
 \description{
-Downloads the most recent GTFS schedule from the Victorian Government
-website and saves it to a folder for further extraction.
+Downloads the most recent complete Victorian GTFS schedule from the
+Victorian Government's open data portal and extracts it into
+a local directory. The download includes all public transport modes
+(trains, trams, buses, coaches) organized into numbered subdirectories
+corresponding to PTV's mode classification system.
+}
+\details{
+This function performs the following steps:
+\enumerate{
+  \item Sets a 10-minute download timeout to accommodate the large file
+        size (typically 200+ MB)
+  \item Creates the target directory if it doesn't exist
+  \item Downloads the GTFS archive from the PTV open data portal
+  \item Extracts all contents into the specified directory
+  \item Removes the downloaded ZIP file to save disk space
+}
+
+The extracted GTFS feeds are organized by transport mode number:
+\itemize{
+  \item `1/` = Regional Train
+  \item `2/` = Metro Train
+  \item `3/` = Metro Tram
+  \item `4/` = Metro Bus
+  \item `5/` = Regional Coach
+  \item `6/` = Regional Bus
+  \item `10/` = Interstate
+  \item `11/` = SkyBus
+}
+
+Each numbered subdirectory contains a `google_transit.zip` file with
+the GTFS data for that mode.
+}
+\note{
+This function requires an active internet connection and sufficient
+disk space (approximately 400-500 MB after extraction). The download
+may take several minutes depending on connection speed.
+}
+\examples{
+\dontrun{
+# Download to default "gtfs" directory
+download_latest_vic_gtfs()
+
+# Download to a custom location
+download_latest_vic_gtfs("data/vic_gtfs")
+
+# Then open specific feeds
+metro <- open_vic_gtfs("gtfs", "Metro_Train")
+
+# Or open all feeds at once
+all_modes <- open_and_join_all_vic_gtfs("gtfs")
+}
+
 }
