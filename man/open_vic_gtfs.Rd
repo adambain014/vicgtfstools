@@ -4,7 +4,7 @@
 \alias{open_vic_gtfs}
 \title{Open a Specific Victorian GTFS Feed}
 \usage{
-open_vic_gtfs(parent, mode)
+open_vic_gtfs(parent, mode, tag_mode = TRUE)
 }
 \arguments{
 \item{parent}{A character string giving the path to the parent directory containing
@@ -14,38 +14,67 @@ the extracted GTFS mode folders.}
 values are:
 `"Regional_Train"`, `"Metro_Train"`, `"Metro_Tram"`, `"Metro_Bus"`,
 `"Regional_Coach"`, `"Regional_Bus"`, `"Interstate"`, `"SkyBus"`.}
+
+\item{tag_mode}{Logical; if `TRUE` (default), adds `mode_number` and `mode_name` columns
+to all data tables in the GTFS object. Set to `FALSE` to return the
+raw GTFS object without mode tagging.}
 }
 \value{
-A GTFS object as returned by \code{gtfstools::read_gtfs()}, with an
-additional \code{$mode} list element containing:
+A GTFS object as returned by \code{gtfstools::read_gtfs()}.
+
+If \code{tag_mode = TRUE} (default), all data tables include:
 \itemize{
-  \item \code{$number}: the PTV mode number (e.g., 2 for Metro Train)
-  \item \code{$name}: the mode name as specified in the \code{mode} argument
+  \item \code{mode_number}: the Department of Transport mode number
+        (e.g., 2 for Metro Train)
+  \item \code{mode_name}: the mode name as specified in the \code{mode}
+        argument
 }
+
+Empty tables are handled safely by adding zero-length columns of the
+appropriate type.
 }
 \description{
 Selects and loads a specific Victorian GTFS feed based on the chosen
 public transport mode. This function assumes that the GTFS archive has
-already been downloaded and extracted into the standard PTV folder
-structure, where each mode is stored in a numbered subdirectory.
+already been downloaded and extracted into the standard Department of
+Transport and Planning folder structure, where each mode is stored in
+a numbered subdirectory.
 
-The returned GTFS object includes a \code{$mode} list with elements
-\code{$number} (the PTV mode number) and \code{$name} (the mode name),
-which can be used for subsequent filtering or joining operations.
+By default, the function adds \code{mode_number} and \code{mode_name}
+columns to all data tables within the GTFS object, making it easy to
+identify the transport mode when working with combined datasets.
 }
 \details{
 The function maps human‑readable mode names to the numeric folder
-structure used in the Victorian GTFS distribution. It validates both
-the mode and the existence of the parent directory before attempting
-to read the feed.
+structure used in the Victorian GTFS distribution:
+
+\itemize{
+  \item `1` = Regional Train
+  \item `2` = Metro Train
+  \item `3` = Metro Tram
+  \item `4` = Myki Bus (Metro Bus and Regional Town Bus)
+  \item `5` = Regional Coach
+  \item `6` = Regional Bus
+  \item `10` = Interstate
+  \item `11` = SkyBus
+}
+
+The function validates both the mode and the existence of the parent
+directory before attempting to read the feed.
+
+Mode tagging is essential for workflows that combine multiple GTFS feeds,
+as it preserves mode identity throughout join operations.
 }
 \examples{
 \dontrun{
-# Load the Metro Train GTFS feed
+# Load the Metro Train GTFS feed with mode tagging
 metro <- open_vic_gtfs("gtfs", "Metro_Train")
 
-# Check mode metadata
-metro$mode  # list(number = 2, name = "Metro_Train")
+# Check that mode columns are present
+head(metro$trips[, c("trip_id", "mode_number", "mode_name")])
+
+# Load without mode tagging
+metro_raw <- open_vic_gtfs("gtfs", "Metro_Train", tag_mode = FALSE)
 }
 
 }

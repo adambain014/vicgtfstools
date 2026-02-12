@@ -20,7 +20,8 @@ Imports:
     utils,
     rlang,
     gtfstools,
-    dplyr
+    dplyr,
+    stringr
 Suggests:
     sf
 RoxygenNote: 7.3.3

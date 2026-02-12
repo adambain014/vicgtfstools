@@ -3,6 +3,9 @@
 \name{download_latest_vic_gtfs}
 \alias{download_latest_vic_gtfs}
 \title{Download the Latest Victorian GTFS Schedule}
+\source{
+\url{https://opendata.transport.vic.gov.au/dataset/gtfs-schedule}
+}
 \usage{
 download_latest_vic_gtfs(to = "gtfs")
 }
@@ -19,11 +22,15 @@ subdirectory represents a transport mode and contains a
 `google_transit.zip` file.
 }
 \description{
-Downloads the most recent complete Victorian GTFS schedule from the
-Victorian Government's open data portal and extracts it into
-a local directory. The download includes all public transport modes
+Downloads the most recent Victorian GTFS schedule from the Victorian
+Department of Transport and Planning's open data portal and extracts it
+into a local directory. The download includes all public transport modes
 (trains, trams, buses, coaches) organized into numbered subdirectories
-corresponding to PTV's mode classification system.
+corresponding to the department's mode classification system.
+
+The dataset is published in standardized GTFS (General Transit Feed
+Specification) format and is updated weekly or as needed. The data
+contains a rolling 30-day window from the date of export.
 }
 \details{
 This function performs the following steps:
@@ -31,7 +38,8 @@ This function performs the following steps:
   \item Sets a 10-minute download timeout to accommodate the large file
         size (typically 200+ MB)
   \item Creates the target directory if it doesn't exist
-  \item Downloads the GTFS archive from the PTV open data portal
+  \item Downloads the GTFS archive from the Department of Transport and
+        Planning open data portal
   \item Extracts all contents into the specified directory
   \item Removes the downloaded ZIP file to save disk space
 }
@@ -41,7 +49,7 @@ The extracted GTFS feeds are organized by transport mode number:
   \item `1/` = Regional Train
   \item `2/` = Metro Train
   \item `3/` = Metro Tram
-  \item `4/` = Metro Bus
+  \item `4/` = Myki Bus (Metro Bus and Regional Town Bus)
   \item `5/` = Regional Coach
   \item `6/` = Regional Bus
   \item `10/` = Interstate
@@ -50,11 +58,36 @@ The extracted GTFS feeds are organized by transport mode number:
 
 Each numbered subdirectory contains a `google_transit.zip` file with
 the GTFS data for that mode.
+
+**Data Features:**
+The Victorian GTFS dataset includes enhanced features beyond the basic
+GTFS specification:
+\itemize{
+  \item **Transfers**: Transfer information in `transfers.txt`
+  \item **Wheelchair accessibility**: Accessibility data for trips and stops
+  \item **Pathways**: Detailed path links within stations
+  \item **Platform information**: Platform numbers and locations for metro trains
+  \item **Bus replacement services**: Dedicated stops and trip information
+  \item **Station levels**: Multi-level station information
+}
+
+**Data Currency and Coverage:**
+\itemize{
+  \item Updated weekly or as needed
+  \item Contains rolling 30 days of data from export date
+  \item Some route information may be incomplete for the full period if
+        service details are not yet available
+  \item Path information generated using automatic algorithms and manual
+        pathing (may contain inaccuracies)
+}
 }
 \note{
 This function requires an active internet connection and sufficient
 disk space (approximately 400-500 MB after extraction). The download
 may take several minutes depending on connection speed.
+
+The data is published under Creative Commons Attribution 4.0
+International License.
 }
 \examples{
 \dontrun{

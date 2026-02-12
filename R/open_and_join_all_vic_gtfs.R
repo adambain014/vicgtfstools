@@ -3,14 +3,19 @@
 #' @description
 #' Automatically detects, opens, and combines all Victorian GTFS feeds
 #' present within a parent directory. The function identifies GTFS mode
-#' folders by their numeric PTV identifiers (e.g., `1`, `2`, `3`, `10`),
-#' maps them to human‑readable mode names, loads each feed, adds mode
-#' metadata columns, and merges them into a single GTFS object.
+#' folders by their numeric Department of Transport identifiers (e.g.,
+#' `1`, `2`, `3`, `10`), maps them to human‑readable mode names, loads
+#' each feed with mode tagging enabled, and merges them into a single
+#' GTFS object.
+#'
+#' This is the recommended approach for working with the complete Victorian
+#' public transport network dataset.
 #'
 #' @param parent
 #' A character string giving the path to the directory containing the
 #' extracted Victorian GTFS mode folders (e.g., `1/`, `2/`, `3/`,
-#' `10/`, `11/`).
+#' `10/`, `11/`). This is typically the directory specified in
+#' \code{download_latest_vic_gtfs()}.
 #'
 #' @return
 #' A unified GTFS object where:
@@ -24,46 +29,68 @@
 #'
 #' @details
 #' This function is designed for workflows where Victorian GTFS feeds are
-#' downloaded and extracted into the standard PTV folder structure, where
-#' each mode is stored in a numeric subdirectory. Only folders whose names
-#' can be safely interpreted as integers are considered. These integers
-#' are mapped to known Victorian transport modes:
+#' downloaded and extracted into the standard Department of Transport and
+#' Planning folder structure, where each mode is stored in a numeric
+#' subdirectory.
+#'
+#' **Mode Detection:**
+#' Only folders whose names can be safely interpreted as integers are
+#' considered. These integers are mapped to known Victorian transport modes:
 #'
 #' \itemize{
 #'   \item `1` = Regional Train
 #'   \item `2` = Metro Train
 #'   \item `3` = Metro Tram
-#'   \item `4` = Metro Bus
+#'   \item `4` = Myki Bus (Metro Bus and Regional Town Bus)
 #'   \item `5` = Regional Coach
 #'   \item `6` = Regional Bus
 #'   \item `10` = Interstate
 #'   \item `11` = SkyBus
 #' }
 #'
+#' Unknown mode folders (numeric folders not in the above list) will
+#' trigger a warning and be skipped. If no valid mode folders are found,
+#' the function raises an error.
+#'
+#' **Mode Tagging:**
+#' All feeds are opened with \code{tag_mode = TRUE}, ensuring that mode
+#' metadata is preserved throughout the joined dataset. This makes it
+#' straightforward to filter or analyze data by transport mode.
+#'
+#' **Robustness:**
 #' Any mode folder present in \code{parent} will be opened and included in
 #' the final merged GTFS object. This makes the function robust to partial
-#' or customised GTFS datasets.
+#' or customized GTFS datasets (e.g., if only metro modes are downloaded).
 #'
 #' @examples
 #' \dontrun{
-#' # Load and combine all GTFS feeds in the "gtfs" directory
+#' # Download and extract GTFS data
+#' download_latest_vic_gtfs("gtfs")
+#'
+#' # Load and combine all GTFS feeds
 #' all_gtfs <- open_and_join_all_vic_gtfs("gtfs")
 #'
 #' # Inspect combined routes
 #' head(all_gtfs$routes)
+#'
+#' # Check available modes
+#' table(all_gtfs$routes$mode_name)
+#'
+#' # Filter to specific mode
+#' library(dplyr)
+#' tram_routes <- all_gtfs$routes |>
+#'   filter(mode_name == "Metro_Tram")
 #' }
 #'
 #' @export
 open_and_join_all_vic_gtfs <- function(parent) {
-  # Detect numeric GTFS folders
+  # Detect numeric GTFS folders (1,2,3,4,5,6,10,11)
   folders <- list.dirs(parent, full.names = FALSE, recursive = FALSE)
   numbers <- suppressWarnings(as.integer(folders))
   numbers <- numbers[!is.na(numbers)]
-
   if (length(numbers) == 0) {
     stop("No valid GTFS mode folders found in ", parent)
   }
-
   # Map numbers to mode names
   lookup <- c(
     `1` = "Regional_Train",
@@ -75,47 +102,21 @@ open_and_join_all_vic_gtfs <- function(parent) {
     `10` = "Interstate",
     `11` = "SkyBus"
   )
-
-  # Load all GTFS feeds and tag with mode metadata
-  all_tables <- list()
-
-  for (num in numbers) {
-    mode_name <- lookup[as.character(num)]
-    if (is.na(mode_name)) {
-      warning("Unknown mode folder: ", num, ". Skipping.")
-      next
-    }
-
-    # Read GTFS
-    gtfs_path <- file.path(parent, num, "google_transit.zip")
-    gtfs <- gtfstools::read_gtfs(gtfs_path)
-
-    # Add mode columns to each data frame
-    for (tbl_name in names(gtfs)) {
-      if (is.data.frame(gtfs[[tbl_name]])) {
-        n <- nrow(gtfs[[tbl_name]])
-        if (n > 0) {
-          gtfs[[tbl_name]]$mode_number <- num
-          gtfs[[tbl_name]]$mode_name <- mode_name
-        } else {
-          gtfs[[tbl_name]]$mode_number <- numeric(0)
-          gtfs[[tbl_name]]$mode_name <- character(0)
-        }
-
-        # Accumulate tables
-        if (is.null(all_tables[[tbl_name]])) {
-          all_tables[[tbl_name]] <- list()
-        }
-        all_tables[[tbl_name]][[length(all_tables[[tbl_name]]) + 1]] <- gtfs[[tbl_name]]
-      }
-    }
+  # Convert numbers to mode names
+  modes <- lookup[as.character(numbers)]
+  # Filter out unknown folders
+  valid <- !is.na(modes)
+  if (!all(valid)) {
+    warning("Skipping unknown mode folders: ",
+            paste(numbers[!valid], collapse = ", "))
   }
-
-  # Combine all accumulated tables
-  combined <- lapply(all_tables, function(tables) {
-    dplyr::bind_rows(tables)
+  modes <- modes[valid]
+  # Open all GTFS feeds using your existing function
+  gtfs_list <- lapply(modes, function(m) {
+    open_vic_gtfs(parent, m, tag_mode = TRUE)
   })
-
-  combined
+  # Iteratively join them using your join function
+  out <- Reduce(join_vic_gtfs, gtfs_list)
+  out
 }
 
