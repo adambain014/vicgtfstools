@@ -21,7 +21,8 @@ Imports:
     rlang,
     gtfstools,
     dplyr,
-    stringr
+    stringr,
+    data.table
 Suggests:
     sf
 RoxygenNote: 7.3.3
