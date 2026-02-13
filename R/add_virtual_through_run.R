@@ -2,16 +2,18 @@
 #'
 #' @description
 #' Extends GTFS stop_times to include virtual stops for through-running train services.
-#' When trains continue in the opposite direction after reaching their terminus (blocking),
+#' When trains continue in the opposite direction after reaching their terminus, and adds remaining City Loop
+#' stations before and after Flinders Street.
 #' this function adds the continuation stops as "virtual" stops to represent the complete
 #' journey passengers can take without changing trains.
 #'
 #' @param metro_train_gtfs A GTFS object containing at minimum `trips`, `stops`, and
-#'   `stop_times` tables. Typically created by reading GTFS data with `gtfstools` or similar.
+#'   `stop_times` tables. Typically created by reading GTFS data with `vicgtfstools("Metro_Train")` or similar.
 #' @param keep_overlap Logical. If `TRUE` (default), duplicate stops at the reversal point
 #'   are kept for both the original and virtual portions. If `FALSE`, duplicates are
 #'   collapsed into a single stop, with the arrival time taken from the first occurrence
 #'   (the original trip's terminus becomes the through-run's starting point).
+#'   Usually is is only used for Flinders Street/Town Hall
 #'
 #' @return A modified GTFS object with the same structure as the input, where `stop_times`
 #'   has been extended with virtual stops. The returned `stop_times` includes:

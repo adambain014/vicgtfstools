@@ -22,6 +22,8 @@ devtools::install_github("adambain014/vicgtfstools")
 - **Join** multiple feeds while preserving mode metadata
 - **Combine** all available modes into a single unified dataset
 - **Extract** route codes from trip identifiers for analysis and matching
+- **Add virtual through-run stops** for Melbourne metro trains that continue service after reaching their terminus
+- **Tag regional bus services** with geographic classifications across Victoria
 
 All GTFS feeds are automatically tagged with `mode_number` and `mode_name` columns for easy filtering and analysis.
 
@@ -98,6 +100,41 @@ trips_with_codes |>
   summarise(n_trips = n())
 ```
 
+### Add virtual through-run stops for Metro Trains
+```r
+# Load Metro Train GTFS
+metro_train <- open_vic_gtfs("gtfs", "Metro_Train")
+
+# Add virtual stops for through-running services
+metro_train_extended <- add_virtual_through_run(metro_train, keep_overlap = TRUE)
+
+# Examine virtual stops for a trip
+library(data.table)
+stop_times <- as.data.table(metro_train_extended$stop_times)
+stop_times[trip_id == "example_trip_id", .(stop_id, stop_sequence, virtual, trip_type)]
+
+# Check trip classifications
+stop_times[, .N, by = trip_type]
+# Returns counts for: "Simple", "Through Run", "City Loop"
+```
+
+### Tag regional bus routes by location
+```r
+# Load bus GTFS
+bus_gtfs <- open_vic_gtfs("gtfs", "Metro_Bus")
+
+# Add regional classifications
+bus_gtfs_tagged <- tag_myki_bus(bus_gtfs)
+
+# View regional distribution
+library(data.table)
+routes <- as.data.table(bus_gtfs_tagged$routes)
+routes[, .N, by = region]
+
+# Filter to regional services
+regional_routes <- routes[region != "Melbourne"]
+```
+
 ## Supported Transport Modes
 
 | Mode Number | Mode Name         | Description           |
@@ -113,11 +150,18 @@ trips_with_codes |>
 
 ## Functions
 
+### Core Functions
 - `download_latest_vic_gtfs()` - Download and extract the latest Victorian GTFS data
 - `open_vic_gtfs()` - Open a specific transport mode's GTFS feed with mode tagging
 - `join_vic_gtfs()` - Join two GTFS feeds with mode metadata
 - `open_and_join_all_vic_gtfs()` - Open and combine all available feeds
 - `add_route_code_from_trip_id()` - Extract route/line codes from trip IDs
+
+### Metro Train Functions
+- `add_virtual_through_run()` - Add virtual stops for through-running train services that continue past their terminus
+
+### Bus Functions
+- `tag_myki_bus()` - Tag bus routes with regional classifications (Melbourne, Bendigo, Ballarat, Geelong, etc.)
 
 ## Enhanced GTFS Features
 
@@ -130,6 +174,21 @@ The Victorian GTFS dataset includes additional features beyond the basic GTFS sp
 - **Platform information** - Platform numbers and locations for metro train stations
 - **Bus replacement services** - Dedicated stops and trip information for rail replacement buses
 - **Enhanced tram identifiers** - Business identifiers for improved matching with real-time feeds
+
+### Package-Specific Enhancements
+
+#### Virtual Through-Run Stops (Metro Trains)
+Melbourne's metro trains often "block" - continuing service in the opposite direction after reaching their terminus. The `add_virtual_through_run()` function extends the GTFS data to represent the complete passenger journey:
+
+- **Trip Types**: Classifies trips as "Simple", "Through Run", or "City Loop"
+- **Virtual Stops**: Adds continuation stops to show where passengers can travel without changing trains
+- **Flexible Handling**: Option to keep or collapse duplicate stops at reversal points
+
+#### Regional Bus Classification
+The `tag_myki_bus()` function adds geographic context to bus routes, classifying services across:
+- Metropolitan Melbourne
+- Regional cities: Bendigo, Ballarat, Geelong, Seymour, Kilmore
+- Regional towns: Warragul, Latrobe Valley, Wallan, Ballan, Bacchus Marsh
 
 ## Data Currency
 
@@ -154,6 +213,7 @@ GTFS data is sourced from the [Victorian Department of Transport and Planning Op
 - `gtfstools` - For reading GTFS feeds
 - `dplyr` - For data manipulation
 - `stringr` - For string operations (extracting route codes)
+- `data.table` - For efficient data processing
 - `rlang` - For utilities
 - `utils` - For downloading and extracting files
 
