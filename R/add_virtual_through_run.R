@@ -73,6 +73,7 @@
 #' stop_times[trip_id == "example_trip_id", .(stop_id, virtual, trip_type)]
 #' }
 #'
+#' @import data.table
 #' @export
 add_virtual_through_run <- function(metro_train_gtfs, keep_overlap = TRUE){
 
