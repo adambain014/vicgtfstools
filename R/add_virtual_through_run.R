@@ -195,32 +195,34 @@ add_virtual_through_run <- function(metro_train_gtfs, keep_overlap = TRUE){
   ]
 
   # Handle duplicate stops at reversal points
-  if(keep_overlap == FALSE){
+  if (keep_overlap == FALSE) {
 
-    # Identify duplicates once
+    # Count duplicates
     combined_list[, n_occur := .N, by = .(trip_id, stop_id)]
 
-    # Only process rows that are duplicates
     if (combined_list[n_occur > 1, .N] > 0) {
-      # Add occurrence only for duplicates
-      combined_list[n_occur > 1, occurrence := seq_len(.N), by = .(trip_id, stop_id)]
 
-      # Get first arrival time (from virtual stop, which appears first)
-      combined_list[n_occur > 1 & occurrence == 1, first_arrival := arrival_time]
+      # Order duplicates by departure_time so we can pick earliest vs latest
+      combined_list[n_occur > 1,
+                    occurrence := frank(departure_time, ties.method = "first"),
+                    by = .(trip_id, stop_id)]
+
+      # Extract arrival_time from the earlier row (occurrence == 1)
+      combined_list[n_occur > 1 & occurrence == 1,
+                    first_arrival := arrival_time]
+
+      # Broadcast first_arrival to both rows
       combined_list[, first_arrival := first_arrival[1], by = .(trip_id, stop_id)]
 
-      # Transfer arrival time to second occurrence (the real stop)
+      # Replace arrival_time in the later row (occurrence == 2)
       combined_list[occurrence == 2, arrival_time := first_arrival]
 
-      # Remove first occurrences (virtual duplicates)
-      combined_list <- combined_list[is.na(occurrence) | occurrence != 1]
-
-      # Mark retained stops as non-virtual and clear source
-      combined_list[occurrence == 2, virtual := FALSE]
-      combined_list[occurrence == 2, source_trip_id := NA]
+      # Keep only the later row
+      combined_list <- combined_list[is.na(occurrence) | occurrence == 2]
 
       # Clean up
       combined_list[, c("n_occur", "occurrence", "first_arrival") := NULL]
+
     } else {
       combined_list[, n_occur := NULL]
     }
