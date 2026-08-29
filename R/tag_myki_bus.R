@@ -19,7 +19,7 @@
 #'     \item{Latrobe Valley}{Routes with codes starting with "L" or route 855}
 #'     \item{Wallan}{Routes with codes starting with "WN" or route W12}
 #'     \item{Ballan}{Routes with codes ending with "x" or "y"}
-#'     \item{Bacchus Marsh}{Routes 433 and 434}
+#'     \item{Bacchus Marsh}{Routes with codes starting with "BM"}
 #'     \item{Seymour}{Routes with codes starting with "SY"}
 #'     \item{Kilmore}{Routes with codes starting with "KM"}
 #'   }
@@ -57,22 +57,24 @@
 tag_myki_bus <- function(metro_bus_gtfs){
 
   routes <- data.table::as.data.table(metro_bus_gtfs$routes)
+  # Fix 695F
+  routes[, route_id := gsub("695-F", "695F", route_id)]
 
   # Split route_id safely
-  routes[, c("trip_code", "route_code", "country_code", "additional_number", "overflow") :=
-           data.table::tstrsplit(route_id, "-", fixed = TRUE, fill = NA)]
+  routes[, route_code :=
+           data.table::tstrsplit(route_id, "-", fixed = TRUE, fill = NA)[2]]
 
-  # Region classification
+
   routes[, region :=
            data.table::fcase(
+             grepl("^BM", route_code),                     "Bacchus Marsh",
+             grepl("^(WN|W12$)", route_code),              "Wallan",
              grepl("^B",  route_code),                     "Bendigo",
              grepl("B$",  route_code),                     "Ballarat",
              grepl("^G",  route_code),                     "Geelong",
              grepl("^(W|v|V)", route_code),                "Warragul",
              grepl("^L|855$", route_code),                 "Latrobe Valley",
-             grepl("^(WN|W12$)", route_code),              "Wallan",
              grepl("x$|y$", route_code),                   "Ballan",
-             route_code %in% c("433", "434"),              "Bacchus Marsh",
              grepl("^SY", route_code),                     "Seymour",
              grepl("^KM", route_code),                     "Kilmore",
              default = "Melbourne"
@@ -80,9 +82,11 @@ tag_myki_bus <- function(metro_bus_gtfs){
   ]
 
   # Drop temporary split columns
-  routes[, c("trip_code", "route_code", "country_code", "additional_number", "overflow") := NULL]
+  routes[, route_code := NULL]
 
   # Return updated GTFS object
   metro_bus_gtfs$routes <- routes
   metro_bus_gtfs
 }
+
+

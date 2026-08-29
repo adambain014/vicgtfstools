@@ -2,3 +2,5 @@
 .Rhistory
 .RData
 .Ruserdata
+gtfs/gtfs.zip
+*.zip

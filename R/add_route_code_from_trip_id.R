@@ -1,67 +1,37 @@
-#' Open and Join All Available Victorian GTFS Feeds
+#' Add Route Code from Trip ID
 #'
 #' @description
-#' Automatically detects, opens, and combines all Victorian GTFS feeds
-#' present within a parent directory. The function identifies GTFS mode
-#' folders by their numeric PTV identifiers (e.g., `1`, `2`, `3`, `10`),
-#' maps them to human‑readable mode names, loads each feed, adds mode
-#' metadata columns, and merges them into a single GTFS object.
+#' Extracts a route/line code embedded in a GTFS `trip_id` and adds it as a
+#' new `route_code` column. Assumes the Victorian GTFS convention where the
+#' route or line code sits in the second hyphen-delimited segment of the
+#' `trip_id` (e.g. `"1234-ABC-5678"` -> `"ABC"`).
 #'
-#' @param parent
-#' A character string giving the path to the directory containing the
-#' extracted Victorian GTFS mode folders (e.g., `1/`, `2/`, `3/`,
-#' `10/`, `11/`).
+#' @param df
+#' A data frame or data.table containing a `trip_id` column — typically
+#' the `trips` or `stop_times` table from a GTFS object.
 #'
 #' @return
-#' A unified GTFS object where:
-#' \itemize{
-#'   \item all detected GTFS feeds have been opened,
-#'   \item each table includes \code{mode_number} and \code{mode_name}
-#'         columns identifying its source mode,
-#'   \item tables shared across feeds are row‑bound,
-#'   \item tables present in only one feed are included unchanged.
-#' }
-#'
-#' @details
-#' This function is designed for workflows where Victorian GTFS feeds are
-#' downloaded and extracted into the standard PTV folder structure, where
-#' each mode is stored in a numeric subdirectory. Only folders whose names
-#' can be safely interpreted as integers are considered. These integers
-#' are mapped to known Victorian transport modes:
-#'
-#' \itemize{
-#'   \item `1` = Regional Train
-#'   \item `2` = Metro Train
-#'   \item `3` = Metro Tram
-#'   \item `4` = Metro Bus
-#'   \item `5` = Regional Coach
-#'   \item `6` = Regional Bus
-#'   \item `10` = Interstate
-#'   \item `11` = SkyBus
-#' }
-#'
-#' Any mode folder present in \code{parent} will be opened and included in
-#' the final merged GTFS object. This makes the function robust to partial
-#' or customised GTFS datasets.
+#' The input data frame with an added `line_code` character column.
 #'
 #' @examples
 #' \dontrun{
-#' # Load and combine all GTFS feeds in the "gtfs" directory
-#' all_gtfs <- open_and_join_all_vic_gtfs("gtfs")
-#'
-#' # Inspect combined routes
-#' head(all_gtfs$routes)
+#' trips_with_code <- add_route_code_from_trip_id(gtfs$trips)
+#' head(trips_with_code[, c("trip_id", "line_code")])
 #' }
 #'
 #' @export
-add_route_code_from_trip_id <- function(df){
-
-  if (!("trip_id" %in% names(df))) {
+add_route_code_from_trip_id <- function(trips){
+  if (!("trip_id" %in% names(trips))) {
     stop("Function requires trip_id to be present, use with trips or stop_times")
   }
 
-  df |>
-    dplyr::mutate(
-      line_code = as.characstringr::str_split_i(trip_id, "-", 2)
-      )
+  trips <- data.table::as.data.table(trips)
+  # Fix 695F
+  trips[, trip_id := gsub("695-F", "695F", trip_id)]
+
+  # Split route_id safely
+  trips[, route_code :=
+           data.table::tstrsplit(trip_id, "-", fixed = TRUE, fill = NA)[2]]
+
 }
+

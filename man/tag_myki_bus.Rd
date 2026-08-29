@@ -22,7 +22,7 @@ A modified GTFS object with the same structure as the input, where the
     \item{Latrobe Valley}{Routes with codes starting with "L" or route 855}
     \item{Wallan}{Routes with codes starting with "WN" or route W12}
     \item{Ballan}{Routes with codes ending with "x" or "y"}
-    \item{Bacchus Marsh}{Routes 433 and 434}
+    \item{Bacchus Marsh}{Routes with codes starting with "BM"}
     \item{Seymour}{Routes with codes starting with "SY"}
     \item{Kilmore}{Routes with codes starting with "KM"}
   }

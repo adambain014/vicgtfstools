@@ -45,19 +45,23 @@ columns to all data tables within the GTFS object, making it easy to
 identify the transport mode when working with combined datasets.
 }
 \details{
-The function maps human‑readable mode names to the numeric folder
-structure used in the Victorian GTFS distribution:
+The function maps human-readable mode names (and their numeric codes) to
+the folder structure used in the Victorian GTFS distribution. Each mode
+number accepts either an underscore-style or space-style name:
 
 \itemize{
-  \item `1` = Regional Train
-  \item `2` = Metro Train
-  \item `3` = Metro Tram
-  \item `4` = Myki Bus (Metro Bus and Regional Town Bus)
-  \item `5` = Regional Coach
-  \item `6` = Regional Bus
+  \item `1` = Regional Train (`"Regional_Train"` or `"Regional Train"`)
+  \item `2` = Metro Train (`"Metro_Train"` or `"Metropolitan Train"`)
+  \item `3` = Metro Tram (`"Metro_Tram"` or `"Metropolitan Tram"`)
+  \item `4` = Myki Bus — Metro Bus and Regional Town Bus
+        (`"Metro_Bus"` or `"Metro Bus"`)
+  \item `5` = Regional Coach (`"Regional_Coach"` or `"Regional Coach"`)
+  \item `6` = Regional Bus (`"Regional_Bus"` or `"Regional Bus"`)
   \item `10` = Interstate
   \item `11` = SkyBus
 }
+
+Numeric codes (e.g. `2`, `"2"`) are also accepted directly for any mode.
 
 The function validates both the mode and the existence of the parent
 directory before attempting to read the feed.
