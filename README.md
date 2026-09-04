@@ -10,13 +10,13 @@ editor_options: markdown: wrap: 72 ---
 
 <img src="man/figures/logo.png" align="right" height="139"/> Tools for downloading, opening, and processing General Transit Feed Specification (GTFS) data from the Victorian Department of Transport and Planning.
 
-## Installation
+## Installation/Update
 
-You can install the development version of vicgtfstools from GitHub:
+You can install/update the development version of vicgtfstools from GitHub:
 
 ``` r
-# install.packages("devtools")
-devtools::install_github("adambain014/vicgtfstools")
+# install.packages("pak")
+pak::pak("adambain014/vicgtfstools")
 ```
 
 ## Overview
@@ -227,7 +227,7 @@ GTFS data is sourced from the [Victorian Department of Transport and Planning Op
 
 ## Requirements
 
-- R \>= 4.0.0
+- R \>= 4.1.0
 
 - Internet connection (for downloading GTFS data)
 
