@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="210mm"
+   height="297mm"
+   viewBox="0 0 210 297"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.4.3 (0d15f75, 2025-12-25)"
+   sodipodi:docname="logo.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     inkscape:zoom="1.5162318"
+     inkscape:cx="223.91036"
+     inkscape:cy="341.96619"
+     inkscape:window-width="1920"
+     inkscape:window-height="1111"
+     inkscape:window-x="-9"
+     inkscape:window-y="-9"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs1" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       sodipodi:type="star"
+       style="fill:#185fa5;stroke-width:6.9;stroke-linecap:round;stroke-dasharray:none;paint-order:stroke fill markers;stroke:#383838;stroke-opacity:1;stroke-dashoffset:0;fill-opacity:1"
+       id="path1"
+       inkscape:flatsided="true"
+       sodipodi:sides="6"
+       sodipodi:cx="65.612221"
+       sodipodi:cy="86.901293"
+       sodipodi:r1="50.941023"
+       sodipodi:r2="44.11622"
+       sodipodi:arg1="-0.52359878"
+       sodipodi:arg2="0"
+       inkscape:rounded="0"
+       inkscape:randomized="0"
+       d="m 109.72844,61.430778 0,50.941022 -44.116219,25.47052 -44.116222,-25.47052 0,-50.941021 44.116222,-25.470513 z" />
+    <path
+       style="fill:#8f1a95;fill-opacity:1;stroke:none;stroke-width:9.9;stroke-linecap:round;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke fill markers"
+       d="M 65.612221,86.901286 21.496001,61.430778 65.612221,35.960267 Z"
+       id="path4"
+       inkscape:export-filename="logo.png"
+       inkscape:export-xdpi="200"
+       inkscape:export-ydpi="200" />
+    <path
+       style="fill:#78be20;fill-opacity:1;stroke:none;stroke-width:9.9;stroke-linecap:round;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke fill markers"
+       d="M 65.612217,86.901288 109.72844,61.430777 V 112.3718 Z"
+       id="path4-1" />
+    <path
+       style="fill:#a57fb2;fill-opacity:1;stroke:none;stroke-width:9.9;stroke-linecap:round;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke fill markers"
+       d="M 21.495999,112.3718 65.612222,86.901291 v 50.941019 z"
+       id="path4-1-2" />
+    <path
+       style="fill:#f79b00;fill-opacity:1;stroke:none;stroke-width:9.9;stroke-linecap:round;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke fill markers"
+       d="M 65.612218,86.901286 109.72844,112.3718 65.612221,137.84231 Z"
+       id="path4-1-2-2" />
+    <path
+       style="fill:#ed1c24;fill-opacity:1;stroke:none;stroke-width:9.9;stroke-linecap:round;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke fill markers"
+       d="M 21.495999,61.430778 65.612219,86.901293 21.496,112.3718 Z"
+       id="path4-1-2-6" />
+    <text
+       xml:space="preserve"
+       style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:16.9333px;line-height:0.8;font-family:'Times New Roman';-inkscape-font-specification:'Times New Roman,  Italic';text-align:center;word-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:#ffffff;stroke-width:2.7;stroke-linecap:round;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke fill markers"
+       x="65.187782"
+       y="91.627975"
+       id="text4"><tspan
+         sodipodi:role="line"
+         id="tspan4"
+         style="font-style:italic;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:16.9333px;font-family:'Times New Roman';-inkscape-font-specification:'Times New Roman,  Bold Italic';fill:#000000;fill-opacity:1;stroke:#ffffff;stroke-width:2.7;stroke-dasharray:none;stroke-opacity:1"
+         x="65.187782"
+         y="91.627975">vicgtfstools</tspan></text>
+  </g>
+</svg>

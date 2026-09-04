@@ -82,7 +82,7 @@ join_vic_gtfs <- function(gtfs1, gtfs2){
     t1 <- gtfs1[[tbl]]
     t2 <- gtfs2[[tbl]]
     if (is.data.frame(t1) && is.data.frame(t2)) {
-      out[[tbl]] <- dplyr::bind_rows(t1, t2)
+      out[[tbl]] <- data.table::rbindlist(list(t1, t2), fill = TRUE)
     } else if (is.data.frame(t1)) {
       out[[tbl]] <- t1
     } else if (is.data.frame(t2)) {

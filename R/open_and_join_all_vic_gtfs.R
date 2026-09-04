@@ -111,11 +111,11 @@ open_and_join_all_vic_gtfs <- function(parent) {
             paste(numbers[!valid], collapse = ", "))
   }
   modes <- modes[valid]
-  # Open all GTFS feeds using your existing function
+  # Open all GTFS feeds using the existing function
   gtfs_list <- lapply(modes, function(m) {
     open_vic_gtfs(parent, m, tag_mode = TRUE)
   })
-  # Iteratively join them using your join function
+  # Iteratively join them using the join function
   out <- Reduce(join_vic_gtfs, gtfs_list)
   out
 }

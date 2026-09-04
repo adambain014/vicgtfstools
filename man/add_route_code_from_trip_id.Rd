@@ -11,7 +11,7 @@ add_route_code_from_trip_id(trips)
 the `trips` or `stop_times` table from a GTFS object.}
 }
 \value{
-The input data frame with an added `line_code` character column.
+The input data frame with an added `route_code` character column.
 }
 \description{
 Extracts a route/line code embedded in a GTFS `trip_id` and adds it as a
@@ -19,10 +19,17 @@ new `route_code` column. Assumes the Victorian GTFS convention where the
 route or line code sits in the second hyphen-delimited segment of the
 `trip_id` (e.g. `"1234-ABC-5678"` -> `"ABC"`).
 }
+\details{
+Before splitting, any `trip_id` containing the literal substring
+`"695-F"` has it collapsed to `"695F"`, correcting a known formatting
+inconsistency for route 695 where an extra hyphen would otherwise split
+its code across two segments. The `trip_id` is then split on `"-"`
+(fixed, not regex), and the second element is taken as `route_code`.
+}
 \examples{
 \dontrun{
 trips_with_code <- add_route_code_from_trip_id(gtfs$trips)
-head(trips_with_code[, c("trip_id", "line_code")])
+head(trips_with_code[, c("trip_id", "route_code")])
 }
 
 }

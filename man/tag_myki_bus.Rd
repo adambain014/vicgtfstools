@@ -8,7 +8,7 @@ tag_myki_bus(metro_bus_gtfs)
 }
 \arguments{
 \item{metro_bus_gtfs}{A GTFS object containing at minimum a `routes` table.
-Typically created by reading GTFS data with `gtfstools` or similar.}
+Typically created by reading GTFS data with `vicgtfstools` or similar.}
 }
 \value{
 A modified GTFS object with the same structure as the input, where the
@@ -40,6 +40,12 @@ are classified as "Melbourne" by default.
 
 The classification is based on Public Transport Victoria's route numbering
 conventions, where specific prefixes and suffixes indicate regional services.
+
+Before splitting, any `route_id` containing the literal substring
+`"695-F"` has it collapsed to `"695F"`, correcting a known formatting
+inconsistency for route 695 where an extra hyphen would otherwise split
+its code across two segments. The `route_id` is then split on `"-"`
+(fixed, not regex), and the second element is taken as `route_code`.
 }
 \section{Performance}{
 
@@ -51,7 +57,7 @@ memory usage.
 \examples{
 \dontrun{
 # Read bus GTFS data
-bus_gtfs <- gtfstools::read_gtfs("path/to/bus_gtfs.zip")
+bus_gtfs <- vicgtfstools::open_vic_gtfs("path/to/gtfs", "Metro_Bus")
 
 # Add regional classifications
 bus_gtfs_tagged <- tag_myki_bus(bus_gtfs)

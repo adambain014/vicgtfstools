@@ -11,12 +11,19 @@
 #' the `trips` or `stop_times` table from a GTFS object.
 #'
 #' @return
-#' The input data frame with an added `line_code` character column.
+#' The input data frame with an added `route_code` character column.
+#'
+#' @details
+#' Before splitting, any `trip_id` containing the literal substring
+#' `"695-F"` has it collapsed to `"695F"`, correcting a known formatting
+#' inconsistency for route 695 where an extra hyphen would otherwise split
+#' its code across two segments. The `trip_id` is then split on `"-"`
+#' (fixed, not regex), and the second element is taken as `route_code`.
 #'
 #' @examples
 #' \dontrun{
 #' trips_with_code <- add_route_code_from_trip_id(gtfs$trips)
-#' head(trips_with_code[, c("trip_id", "line_code")])
+#' head(trips_with_code[, c("trip_id", "route_code")])
 #' }
 #'
 #' @export

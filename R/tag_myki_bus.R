@@ -6,7 +6,7 @@
 #' locations (Bendigo, Ballarat, Geelong, etc.) based on route_id patterns.
 #'
 #' @param metro_bus_gtfs A GTFS object containing at minimum a `routes` table.
-#'   Typically created by reading GTFS data with `gtfstools` or similar.
+#'   Typically created by reading GTFS data with `vicgtfstools` or similar.
 #'
 #' @return A modified GTFS object with the same structure as the input, where the
 #'   `routes` table has been extended with a `region` column containing one of:
@@ -33,6 +33,12 @@
 #' The classification is based on Public Transport Victoria's route numbering
 #' conventions, where specific prefixes and suffixes indicate regional services.
 #'
+#' Before splitting, any `route_id` containing the literal substring
+#' `"695-F"` has it collapsed to `"695F"`, correcting a known formatting
+#' inconsistency for route 695 where an extra hyphen would otherwise split
+#' its code across two segments. The `route_id` is then split on `"-"`
+#' (fixed, not regex), and the second element is taken as `route_code`.
+#'
 #' @section Performance:
 #' This function uses `data.table` internally for efficient processing of large
 #' GTFS feeds. All operations are performed in-place where possible to minimize
@@ -41,7 +47,7 @@
 #' @examples
 #' \dontrun{
 #' # Read bus GTFS data
-#' bus_gtfs <- gtfstools::read_gtfs("path/to/bus_gtfs.zip")
+#' bus_gtfs <- vicgtfstools::open_vic_gtfs("path/to/gtfs", "Metro_Bus")
 #'
 #' # Add regional classifications
 #' bus_gtfs_tagged <- tag_myki_bus(bus_gtfs)
@@ -61,28 +67,33 @@ tag_myki_bus <- function(metro_bus_gtfs){
   routes[, route_id := gsub("695-F", "695F", route_id)]
 
   # Split route_id safely
-  routes[, route_code :=
+  if("mode_number" %chin% names(routes)){
+    routes[mode_number == 4, route_code1 :=
+             data.table::tstrsplit(route_id, "-", fixed = TRUE, fill = NA)[2]]
+  } else {
+    routes[, route_code1 :=
            data.table::tstrsplit(route_id, "-", fixed = TRUE, fill = NA)[2]]
+    }
 
 
   routes[, region :=
            data.table::fcase(
-             grepl("^BM", route_code),                     "Bacchus Marsh",
-             grepl("^(WN|W12$)", route_code),              "Wallan",
-             grepl("^B",  route_code),                     "Bendigo",
-             grepl("B$",  route_code),                     "Ballarat",
-             grepl("^G",  route_code),                     "Geelong",
-             grepl("^(W|v|V)", route_code),                "Warragul",
-             grepl("^L|855$", route_code),                 "Latrobe Valley",
-             grepl("x$|y$", route_code),                   "Ballan",
-             grepl("^SY", route_code),                     "Seymour",
-             grepl("^KM", route_code),                     "Kilmore",
+             grepl("^BM", route_code1),                     "Bacchus Marsh",
+             grepl("^(WN|W12$)", route_code1),              "Wallan",
+             grepl("^B",  route_code1),                     "Bendigo",
+             grepl("B$",  route_code1),                     "Ballarat",
+             grepl("^G",  route_code1),                     "Geelong",
+             grepl("^(W|v|V)", route_code1),                "Warragul",
+             grepl("^L|855$", route_code1),                 "Latrobe Valley",
+             grepl("x$|y$", route_code1),                   "Ballan",
+             grepl("^SY", route_code1),                     "Seymour",
+             grepl("^KM", route_code1),                     "Kilmore",
              default = "Melbourne"
            )
   ]
 
   # Drop temporary split columns
-  routes[, route_code := NULL]
+  routes[, route_code1 := NULL]
 
   # Return updated GTFS object
   metro_bus_gtfs$routes <- routes

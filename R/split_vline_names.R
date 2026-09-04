@@ -1,0 +1,109 @@
+#' Rename V/Line Long-distance Train Routes To Their Destination Name
+#'
+#' @description
+#' Replaces the `route_short_name` for V/Line long-distance train routes with
+#' the name of their terminating regional city/town (e.g. "Warrnambool",
+#' "Albury"), based on the destination code embedded in `route_id`. Routes that do
+#' not match a known long-distance code are left with their original
+#' `route_short_name`.
+#'
+#' @param vline_train_gtfs A GTFS object containing at minimum a `routes`
+#'   table with `route_id` and `route_short_name` columns. Typically created
+#'   by reading GTFS data with `vicgtfstools` or similar.
+#'
+#' @return A modified GTFS object with the same structure as the input, where
+#'   `routes$route_short_name` has been updated for recognised long-distance
+#'   route codes:
+#'   \describe{
+#'     \item{WBL:}{Warrnambool}
+#'     \item{ART:}{Ararat}
+#'     \item{MBY:}{Maryborough}
+#'     \item{SWL:}{Swan Hill}
+#'     \item{ECH:}{Echuca}
+#'     \item{SNH:}{Shepparton}
+#'     \item{ABY:}{Albury}
+#'     \item{BDE:}{Bairnsdale}
+#'   }
+#'   All other routes retain their existing `route_short_name`.
+#'
+#' @details
+#' The function splits `route_id` on `"-"` (fixed, not regex) and takes the
+#' third element as the `route_code`
+#' If a `mode_number` column is present, the split is only applied to rows
+#' where `mode_number == 1`, leaving other modes untouched; otherwise it is
+#' applied to all rows. The resulting `route_code` is matched against a
+#' lookup table of known V/Line long-distance line codes, and matching rows
+#' have their `route_short_name` overwritten with the destination name via a
+#' data.table join. The temporary `route_code` column is dropped before the
+#' GTFS object is returned.
+#'
+#' Unlike intercity/regional town services, these are treated as
+#' long-distance lines named after their terminus rather than by intermediate
+#' stops.
+#'
+#' @section Performance:
+#' Uses `data.table` internally (including a join-based update of
+#' `route_short_name`) for efficient processing of large GTFS feeds.
+#'
+#' @examples
+#' \dontrun{
+#' # Read V/Line train GTFS data
+#' vline_train_gtfs <- vicgtfstools::open_vic_gtfs("path/to/gtfs", "Regional_Train")
+#'
+#' # Rename long-distance routes to their destination
+#' vline_train_gtfs_named <- split_vline_names(vline_train_gtfs)
+#'
+#' # Check the result
+#' library(data.table)
+#' routes <- as.data.table(vline_train_gtfs_named$routes)
+#' routes[, .(route_id, route_short_name)]
+#' }
+#'
+#' @import data.table
+#' @export
+split_vline_names <- function(vline_train_gtfs){
+
+  routes <- data.table::as.data.table(vline_train_gtfs$routes)
+
+  # Split route_id safely
+  if("mode_number" %chin% names(routes)){
+    routes[mode_number == 1, route_code1 :=
+             data.table::tstrsplit(route_id, "-", fixed = TRUE, fill = NA)[3]]
+  } else {
+    routes[, route_code1 :=
+             data.table::tstrsplit(route_id, "-", fixed = TRUE, fill = NA)[3]]
+  }
+
+  ld_map <- data.table(
+    route_code1 = c("WBL:",
+                   "ART:",
+                   "MBY:",
+                   "SWL:",
+                   "ECH:",
+                   "SNH:",
+                   "ABY:",
+                   "BDE:"),
+    route_short_name = c("Warrnambool",
+                         "Ararat",
+                         "Maryborough",
+                         "Swan Hill",
+                         "Echuca",
+                         "Shepparton",
+                         "Albury",
+                         "Bairnsdale")
+  )
+
+  # Join new names
+  routes[ld_map, on = "route_code1",
+         route_short_name := i.route_short_name]
+
+  # Drop temporary split columns
+  routes[, route_code1 := NULL]
+
+  # Return updated GTFS object
+  vline_train_gtfs$routes <- routes
+  vline_train_gtfs
+}
+
+
+

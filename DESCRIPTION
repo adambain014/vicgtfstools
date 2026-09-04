@@ -20,8 +20,8 @@ Imports:
     utils,
     rlang,
     gtfstools,
-    stringr,
     data.table
 Suggests:
-    sf
+    sf,
+    dplyr
 RoxygenNote: 7.3.3
