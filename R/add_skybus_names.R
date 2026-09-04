@@ -51,24 +51,43 @@
 
     routes <- copy(data.table::as.data.table(skybus_gtfs$routes))
 
+    if ("mode_number" %chin% names(routes)){
+      sb_map <- data.table(
+        route_long_name = c("Box Hill - Melbourne Airport",
+                            "Frankston - Melbourne Airport",
+                            "Melbourne City - Avalon Airport",
+                            "City - Melbourne Airport",
+                            "Sunshine Railway Station - Melbourne Airport"),
+        route_short_name = c("Eastern Express",
+                             "Peninsula Express",
+                             "Avalon City Express",
+                             "Melbourne City Express",
+                             "Sunshine Express"),
+        mode_number = c(11,11,11,11,11)
+      )
 
-    sb_map <- data.table(
-      route_long_name = c("Box Hill - Melbourne Airport",
-                          "Frankston - Melbourne Airport",
-                          "Melbourne City - Avalon Airport",
-                          "City - Melbourne Airport",
-                          "Sunshine Railway Station - Melbourne Airport"),
-      route_short_name = c("Eastern Express",
-                           "Peninsula Express",
-                           "Avalon City Express",
-                           "Melbourne City Express",
-                           "Sunshine Express"),
-      mode_number = c(11,11,11,11,11)
-    )
+      # Join new names
+      routes[sb_map, on = .(mode_number, route_long_name),
+             route_short_name := i.route_short_name]
+    } else {
+      sb_map <- data.table(
+        route_long_name = c("Box Hill - Melbourne Airport",
+                            "Frankston - Melbourne Airport",
+                            "Melbourne City - Avalon Airport",
+                            "City - Melbourne Airport",
+                            "Sunshine Railway Station - Melbourne Airport"),
+        route_short_name = c("Eastern Express",
+                             "Peninsula Express",
+                             "Avalon City Express",
+                             "Melbourne City Express",
+                             "Sunshine Express")
+      )
 
-    # Join new names
-    routes[sb_map, on = .(mode_number, route_long_name),
-           route_short_name := i.route_short_name]
+      # Join new names
+      routes[sb_map, on = "route_long_name",
+             route_short_name := i.route_short_name]
+    }
+
 
     # Return updated GTFS object
     skybus_gtfs$routes <- routes
