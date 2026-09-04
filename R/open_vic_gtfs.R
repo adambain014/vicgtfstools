@@ -95,7 +95,9 @@ open_vic_gtfs <- function(parent, mode, tag_mode = TRUE){
     "Regional_Bus"          = 6,
     "Regional Bus"          = 6,
     "Interstate"            = 10,
-    "SkyBus"                = 11
+    "SkyBus"                = 11,
+    "Skybus"                = 11,
+    "skybus"                = 11
   )
 
   if (is.character(mode)) {

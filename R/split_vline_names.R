@@ -63,7 +63,7 @@
 #' @export
 split_vline_names <- function(vline_train_gtfs){
 
-  routes <- data.table::as.data.table(vline_train_gtfs$routes)
+  routes <- copy(data.table::as.data.table(vline_train_gtfs$routes))
 
   # Split route_id safely
   if("mode_number" %chin% names(routes)){

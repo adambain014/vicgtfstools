@@ -49,7 +49,7 @@
 #' @export
   add_skybus_names <- function(skybus_gtfs){
 
-    routes <- data.table::as.data.table(skybus_gtfs$routes)
+    routes <- copy(data.table::as.data.table(skybus_gtfs$routes))
 
 
     sb_map <- data.table(

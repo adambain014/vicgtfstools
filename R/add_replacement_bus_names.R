@@ -67,7 +67,7 @@
 #' @export
 add_replacement_bus_names <- function(metro_train_gtfs){
 
-  routes <- data.table::as.data.table(metro_train_gtfs$routes)
+  routes <- copy(data.table::as.data.table(metro_train_gtfs$routes))
 
   # Split route_id safely
   if("mode_number" %chin% names(routes)){

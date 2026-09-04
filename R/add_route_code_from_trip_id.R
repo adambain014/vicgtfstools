@@ -32,7 +32,7 @@ add_route_code_from_trip_id <- function(trips){
     stop("Function requires trip_id to be present, use with trips or stop_times")
   }
 
-  trips <- data.table::as.data.table(trips)
+  trips <- copy(data.table::as.data.table(trips))
   # Fix 695F
   trips[, trip_id := gsub("695-F", "695F", trip_id)]
 

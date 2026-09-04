@@ -62,7 +62,7 @@
 #' @export
 tag_myki_bus <- function(metro_bus_gtfs){
 
-  routes <- data.table::as.data.table(metro_bus_gtfs$routes)
+  routes <- copy(data.table::as.data.table(metro_bus_gtfs$routes))
   # Fix 695F
   routes[, route_id := gsub("695-F", "695F", route_id)]
 

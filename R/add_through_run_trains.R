@@ -75,8 +75,8 @@
 #' @export
 add_through_run_trains <- function(metro_trains_gtfs, keep_only_one = FALSE){
 
-  trips <- metro_trains_gtfs$trips
-  stop_times <- metro_trains_gtfs$stop_times
+  trips <- copy(metro_trains_gtfs$trips)
+  stop_times <- copy(metro_trains_gtfs$stop_times)
 
   # Filter trips to list with valid blocks
   if("mode_number" %chin% names(trips)) {

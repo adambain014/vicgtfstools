@@ -60,8 +60,8 @@
 #' @export
 add_city_loop_trains <- function(metro_trains_gtfs){
 
-  trips <- metro_trains_gtfs$trips
-  stop_times <- metro_trains_gtfs$stop_times
+  trips <- copy(metro_trains_gtfs$trips)
+  stop_times <- copy(metro_trains_gtfs$stop_times)
   city_loop_stop_ids <- metro_trains_gtfs$stops[stop_name %chin% c("Flinders Street Station",
                                                                    "Southern Cross Station",
                                                                    "Flagstaff Station",
