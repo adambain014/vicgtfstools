@@ -62,11 +62,12 @@
                            "Peninsula Express",
                            "Avalon City Express",
                            "Melbourne City Express",
-                           "Sunshine Express")
+                           "Sunshine Express"),
+      mode_number = c(11,11,11,11,11)
     )
 
     # Join new names
-    routes[sb_map, on = "route_long_name",
+    routes[sb_map, on = .(mode_number, route_long_name),
            route_short_name := i.route_short_name]
 
     # Return updated GTFS object
