@@ -67,8 +67,9 @@ vic_trips_per_week <- function(gtfs){
     keys <- "service_id"
   }
 
-  first_date <- min(cal[weekdays(start_date) == "Monday" &
-                          start_date > min(cal$start_date) + 7]$start_date)
+  all_valid_from <- max(cal$start_date)
+  first_date <- all_valid_from + (8 - as.integer(format(all_valid_from, "%u"))) %% 7
+  last_date <- first_date + 6
   last_date <- first_date + 6
   cal_week <- cal[start_date <= last_date & end_date >= first_date]
 
