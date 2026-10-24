@@ -65,7 +65,8 @@ tag_myki_bus <- function(metro_bus_gtfs){
   routes <- copy(data.table::as.data.table(metro_bus_gtfs$routes))
   # Fix 695F
   routes[, route_id := gsub("695-F", "695F", route_id)]
-
+  # Fix 8 541
+  routes[, route_id := gsub("54x", "541", route_id)]
   # Split route_id safely
   if("mode_number" %chin% names(routes)){
     routes[mode_number == 4, route_code1 :=
@@ -99,5 +100,3 @@ tag_myki_bus <- function(metro_bus_gtfs){
   metro_bus_gtfs$routes <- routes
   metro_bus_gtfs
 }
-
-
